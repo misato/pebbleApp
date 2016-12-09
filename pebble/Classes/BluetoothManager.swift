@@ -20,6 +20,8 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     let timerScanInterval:TimeInterval = 2.0
     
     
+    let pebbleServiceID = CBUUID(string:"00000000-deca-fade-deca-deafdecacaff")
+    
     override init() {
         super.init()
         centralManager.delegate = self
@@ -33,6 +35,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             print("Start scanning...")
             _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(pauseScan), userInfo: nil, repeats: false)
             centralManager.scanForPeripherals(withServices: nil, options: nil)
+            
         }
     }
     
