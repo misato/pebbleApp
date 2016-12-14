@@ -8,15 +8,24 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
-    var btManager :BluetoothManager?
+class ViewController: UIViewController, BluetoothManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
+    @IBOutlet weak var devicesTableView: UITableView!
+    @IBOutlet weak var scanButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    let devicesTableViewCellIdentifier = "devicesTableViewCellIdentifier"
+    
+    var btManager: BluetoothManager?
+    var deviceNames: [String] = []
+
+    var isScanning = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-
+        devicesTableView.register(UITableViewCell.self, forCellReuseIdentifier: devicesTableViewCellIdentifier)
+        devicesTableView.isHidden = true
+        activityIndicator.stopAnimating()
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,11 +37,59 @@ class ViewController: UIViewController {
     @IBAction func didTapConnect(_ sender: Any) {
         if btManager == nil {
             btManager = BluetoothManager()
+            btManager!.delegate = self
         }
         
         if let btManager = btManager {
-            btManager.startScanning()
+            if !isScanning {
+                btManager.startScanning()
+                scanButton.setTitle("Scanning...", for: .normal)
+                activityIndicator.startAnimating()
+                isScanning = true
+            }
+            else {
+                btManager.stopScanning()
+                scanButton.setTitle("Scan BT devices", for: .normal)
+                activityIndicator.stopAnimating()
+                isScanning = false
+            }
         }
+    }
+    
+    // MARK: - UITableViewDelegate
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        btManager?.connectToDeviceNamed(deviceNames[indexPath.row])
+    }
+    
+    // MARK: - UITableViewDatasource
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: devicesTableViewCellIdentifier, for: indexPath)
+        cell.textLabel?.text = deviceNames[indexPath.row]
+        return cell
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return deviceNames.count
+    }
+    
+    // MARK: - BluetoothManagerDelegate
+    
+    func bluetoothManager(_ manager: BluetoothManager, didFindDeviceNamed deviceName: String) {
+        if !deviceNames.contains(deviceName) {
+            deviceNames.append(deviceName)
+            // This should be done only once!
+            devicesTableView.isHidden = false
+            devicesTableView.reloadData()
+        }
+    }
+    
+    func bluetoothManager(_ manager: BluetoothManager, hadAnError error: BluetoothManagerError) {
+        let alert = UIAlertController(title: "Bluetooth Error", message: error.description, preferredStyle: .alert)
+        alert.show(self, sender: nil)
     }
 
 }
