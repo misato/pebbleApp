@@ -10,6 +10,8 @@ import UIKit
 
 class DeviceConnectionViewController: UIViewController {
     
+    static let storyboardID = "deviceConnectionViewControllerID"
+    
     @IBOutlet weak var deviceNameLabel: UILabel!
     
     var deviceName: String? {

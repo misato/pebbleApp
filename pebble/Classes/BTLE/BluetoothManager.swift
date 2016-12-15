@@ -69,6 +69,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             return
         }
         keepScanning = false
+        stopScanning()
         self.peripheral = peripheral
         self.peripheral?.delegate = self
         centralManager.connect(peripheral, options: nil)
@@ -162,11 +163,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         if let services = peripheral.services {
             for service in services {
                 print("Discovered service \(service)")
-                // If we found either the temperature or the humidity service, discover the characteristics for those services.
-                //                if (service.UUID == CBUUID(string: Device.TemperatureServiceUUID)) ||
-                //                    (service.UUID == CBUUID(string: Device.HumidityServiceUUID)) {
                 peripheral.discoverCharacteristics(nil, for: service)
-                //                }
             }
         }
         

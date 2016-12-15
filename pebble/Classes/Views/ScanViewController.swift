@@ -14,12 +14,14 @@ class ScanViewController: UIViewController, BluetoothManagerDelegate, UITableVie
     @IBOutlet weak var scanButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    let devicesTableViewCellIdentifier = "devicesTableViewCellIdentifier"
+    private let devicesTableViewCellIdentifier = "devicesTableViewCellIdentifier"
     
-    var btManager = BluetoothManager.sharedInstance
-    var deviceNames: [String] = []
+    private var btManager = BluetoothManager.sharedInstance
+    private var deviceNames: [String] = []
 
-    var isScanning = false
+    private var isScanning = false
+    
+    // MARK: - View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,39 +36,37 @@ class ScanViewController: UIViewController, BluetoothManagerDelegate, UITableVie
         // Dispose of any resources that can be recreated.
     }
 
+    // MARK: - Actions
     
     @IBAction func didTapConnect(_ sender: Any) {
-//        if btManager == nil {
-//            btManager = BluetoothManager()
-//            btManager!.delegate = self
-//        }
-//        
-//        if let btManager = btManager {
             if !isScanning {
                 btManager.startScanning()
                 scanButton.setTitle("Scanning...", for: .normal)
                 activityIndicator.startAnimating()
-                isScanning = true
             }
             else {
                 btManager.stopScanning()
                 scanButton.setTitle("Scan BT devices", for: .normal)
                 activityIndicator.stopAnimating()
-                isScanning = false
             }
-//        }
+        
+            isScanning = !isScanning
     }
     
     // MARK: - UITableViewDelegate
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let deviceName = deviceNames[indexPath.row]        
+        let deviceName = deviceNames[indexPath.row]
         btManager.connectToDeviceNamed(deviceName)
-        let deviceConnectionVC = DeviceConnectionViewController()
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let deviceConnectionVC = storyboard.instantiateViewController(withIdentifier: DeviceConnectionViewController.storyboardID) as! DeviceConnectionViewController
         deviceConnectionVC.deviceName = deviceName
         present(deviceConnectionVC, animated: true, completion: nil)
     }
     
     // MARK: - UITableViewDatasource
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: devicesTableViewCellIdentifier, for: indexPath)
         cell.textLabel?.text = deviceNames[indexPath.row]
