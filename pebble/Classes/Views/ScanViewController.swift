@@ -19,7 +19,24 @@ class ScanViewController: UIViewController, BluetoothManagerDelegate, UITableVie
     private var btManager = BluetoothManager.sharedInstance
     private var deviceNames: [String] = []
 
-    private var isScanning = false
+    private var isScanning = false {
+        didSet {
+            setScanningStatus()
+        }
+    }
+    
+    private func setScanningStatus() {
+        if !isScanning {
+            btManager.stopScanning()
+            scanButton.setTitle("Scan BT devices", for: .normal)
+            activityIndicator.stopAnimating()
+        }
+        else {
+            btManager.startScanning()
+            scanButton.setTitle("Scanning...", for: .normal)
+            activityIndicator.startAnimating()
+        }
+    }
     
     // MARK: - View Lifecycle
     
@@ -37,25 +54,16 @@ class ScanViewController: UIViewController, BluetoothManagerDelegate, UITableVie
     }
 
     // MARK: - Actions
-    
     @IBAction func didTapConnect(_ sender: Any) {
-            if !isScanning {
-                btManager.startScanning()
-                scanButton.setTitle("Scanning...", for: .normal)
-                activityIndicator.startAnimating()
-            }
-            else {
-                btManager.stopScanning()
-                scanButton.setTitle("Scan BT devices", for: .normal)
-                activityIndicator.stopAnimating()
-            }
-        
-            isScanning = !isScanning
+        isScanning = !isScanning
     }
     
     // MARK: - UITableViewDelegate
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        isScanning = false
+        
         let deviceName = deviceNames[indexPath.row]
         btManager.connectToDeviceNamed(deviceName)
         
@@ -96,6 +104,11 @@ class ScanViewController: UIViewController, BluetoothManagerDelegate, UITableVie
         let alert = UIAlertController(title: "Bluetooth Error", message: error.description, preferredStyle: .alert)
         alert.show(self, sender: nil)
     }
+    
+    func bluetoothManagerDidFinishedConnectingWithDevice(_ manager: BluetoothManager) {
+        
+    }
+
 
 }
 

@@ -21,6 +21,7 @@ private struct PebbleBLE {
 protocol BluetoothManagerDelegate {
     func bluetoothManager(_ manager: BluetoothManager, didFindDeviceNamed deviceName: String)
     func bluetoothManager(_ manager: BluetoothManager, hadAnError error: BluetoothManagerError)
+    func bluetoothManagerDidFinishedConnectingWithDevice(_ manager: BluetoothManager)
 }
 
 class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
@@ -30,6 +31,10 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     
     private var centralManager = CBCentralManager()
     private var peripheral: CBPeripheral?
+    private var characteristics: [CBCharacteristic]?
+    
+    private var isOldPebble = false
+    
     private var keepScanning = false
     private var devicesList: [String: CBPeripheral] = [:]
     
@@ -47,11 +52,9 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     //MARK: - Scanning
     
     @objc func startScanning() {
-        if keepScanning {
-            print("Start scanning...")
-            _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(stopScanning), userInfo: nil, repeats: false)
-            centralManager.scanForPeripherals(withServices: [PebbleBLE.serviceUUID], options: nil)
-        }
+        print("Start scanning...")
+        _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(stopScanning), userInfo: nil, repeats: false)
+        centralManager.scanForPeripherals(withServices: [PebbleBLE.serviceUUID], options: nil)
     }
     
     
@@ -64,6 +67,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
     
     // MARK: - Connection
+    
     func connectToDeviceNamed(_ name: String) {
         guard let peripheral = devicesList[name] else {
             return
@@ -83,7 +87,26 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         centralManager.cancelPeripheralConnection(peripheral)
     }
     
+    // MARK: - Pairing
+    
+    func doPairingWithDevice() {
+        guard let peripheral = peripheral, let pairingTriggerChar = characteristics?.filter({ $0.uuid == PebbleBLE.pairingTriggerCharacteristicUUID }).first else {
+            return
+        }
+
+        if pairingTriggerChar.properties.contains(CBCharacteristicProperties.write) {
+            peripheral.writeValue(Data(bytes: [1]), for: pairingTriggerChar, type: .withResponse)
+        }
+        else {
+            print("This seems to be some <4.0 FW Pebble, reading pairing trigger")
+            peripheral.readValue(for: pairingTriggerChar)
+        }
+    }
+    
+    
+    
     //MARK: -  Central Manager Delegate
+    
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         keepScanning = false
         var errorMessage: String?
@@ -136,7 +159,6 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             devicesList[peripheralName] = peripheral
             delegate?.bluetoothManager(self, didFindDeviceNamed: peripheralName)
         }
-        
     }
     
     //    //  Invoked when the central manager retrieves a list of peripherals currently connected to the system.
@@ -177,10 +199,11 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         }
         
         if let characteristics = service.characteristics {
-            for characteristic in characteristics {
-                print("Characteristic \(characteristic)")
-            }
+            self.characteristics = characteristics
+            isOldPebble = !characteristics.contains(where: { $0.uuid == PebbleBLE.connectionParametersCharacteristicUUID })
         }
+        
+        delegate?.bluetoothManagerDidFinishedConnectingWithDevice(self)
     }
 
 }
