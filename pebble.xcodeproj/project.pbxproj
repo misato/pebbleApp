@@ -15,6 +15,7 @@
 		68F078851E01D8F900213CEE /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078841E01D8F900213CEE /* BluetoothManager.swift */; };
 		68F078881E01DAFE00213CEE /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078871E01DAFE00213CEE /* ScanViewController.swift */; };
 		68F0788A1E01DB3700213CEE /* DeviceConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078891E01DB3700213CEE /* DeviceConnectionViewController.swift */; };
+		68F2D00B1E04467900705EDC /* PebbleGATTServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F2D00A1E04467900705EDC /* PebbleGATTServer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		68F078841E01D8F900213CEE /* BluetoothManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		68F078871E01DAFE00213CEE /* ScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
 		68F078891E01DB3700213CEE /* DeviceConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceConnectionViewController.swift; sourceTree = "<group>"; };
+		68F2D00A1E04467900705EDC /* PebbleGATTServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PebbleGATTServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 			children = (
 				68F078821E01D8C500213CEE /* BluetoothManagerError.swift */,
 				68F078841E01D8F900213CEE /* BluetoothManager.swift */,
+				68F2D00A1E04467900705EDC /* PebbleGATTServer.swift */,
 			);
 			path = BTLE;
 			sourceTree = "<group>";
@@ -172,6 +175,7 @@
 			files = (
 				68F078881E01DAFE00213CEE /* ScanViewController.swift in Sources */,
 				68F078831E01D8C500213CEE /* BluetoothManagerError.swift in Sources */,
+				68F2D00B1E04467900705EDC /* PebbleGATTServer.swift in Sources */,
 				68F0788A1E01DB3700213CEE /* DeviceConnectionViewController.swift in Sources */,
 				68A401651DFAFFEB006AE55E /* AppDelegate.swift in Sources */,
 				68F078851E01D8F900213CEE /* BluetoothManager.swift in Sources */,

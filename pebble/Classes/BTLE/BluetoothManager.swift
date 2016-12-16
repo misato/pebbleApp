@@ -9,7 +9,7 @@
 import Foundation
 import CoreBluetooth
 
-private struct PebbleBLE {
+private struct PebbleGATTClient {
     static let serviceUUID = CBUUID(string:"0000fed9-0000-1000-8000-00805f9b34fb")
     static let connectivityCharacteristicUUID = CBUUID(string:"00000001-328E-0FBB-C642-1AA6699BDADA")
     static let pairingTriggerCharacteristicUUID = CBUUID(string:"00000002-328E-0FBB-C642-1AA6699BDADA")
@@ -17,6 +17,7 @@ private struct PebbleBLE {
     static let connectionParametersCharacteristicUUID = CBUUID(string:"00000005-328E-0FBB-C642-1AA6699BDADA")
     static let characteristicConfiguratorDescriptor = CBUUID(string:"00002902-0000-1000-8000-00805f9b34fb")
 }
+
 
 protocol BluetoothManagerDelegate {
     func bluetoothManager(_ manager: BluetoothManager, didFindDeviceNamed deviceName: String)
@@ -29,19 +30,15 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     
     static let sharedInstance = BluetoothManager()
     
-    private var centralManager = CBCentralManager()
+    private let centralManager = CBCentralManager()
     private var peripheral: CBPeripheral?
-    private var characteristics: [CBCharacteristic]?
+    private var characteristics: [CBUUID:CBCharacteristic] = [:]
     
-    private var isOldPebble = false
-    
-    private var keepScanning = false
+//    private var isOldPebble = false
+    private var canScan = false
     private var devicesList: [String: CBPeripheral] = [:]
     
-    // define our scanning interval times
-    private let timerPauseInterval:TimeInterval = 10.0
-    private let timerScanInterval:TimeInterval = 2.0
-    
+    private let pebbleServer = PebbleGATTServer()
     
     private override init() {
         super.init()
@@ -53,26 +50,29 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     
     @objc func startScanning() {
         print("Start scanning...")
-        _ = Timer(timeInterval: timerScanInterval, target: self, selector: #selector(stopScanning), userInfo: nil, repeats: false)
-        centralManager.scanForPeripherals(withServices: [PebbleBLE.serviceUUID], options: nil)
+        centralManager.scanForPeripherals(withServices: [PebbleGATTClient.serviceUUID], options:nil)
+        pebbleServer.createService()
     }
     
     
     @objc func stopScanning() {
         print("Stop scanning...")
-        if keepScanning {
-            _ = Timer(timeInterval: timerPauseInterval, target: self, selector: #selector(startScanning), userInfo: nil, repeats: false)
-        }
         centralManager.stopScan()
+
     }
     
+//    // MARK: - paired devices
+//    
+//    func getKnownDevices() {
+//        centralManager.retrievePeripherals(withIdentifiers: [])
+//    }
+//    
     // MARK: - Connection
     
     func connectToDeviceNamed(_ name: String) {
         guard let peripheral = devicesList[name] else {
             return
         }
-        keepScanning = false
         stopScanning()
         self.peripheral = peripheral
         self.peripheral?.delegate = self
@@ -90,10 +90,11 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     // MARK: - Pairing
     
     func doPairingWithDevice() {
-        guard let peripheral = peripheral, let pairingTriggerChar = characteristics?.filter({ $0.uuid == PebbleBLE.pairingTriggerCharacteristicUUID }).first else {
+        guard let peripheral = peripheral, let pairingTriggerChar = characteristics[PebbleGATTClient.pairingTriggerCharacteristicUUID] else {
             return
         }
-
+//        peripheral.setNotifyValue(true, for: pairingTriggerChar);
+        
         if pairingTriggerChar.properties.contains(CBCharacteristicProperties.write) {
             peripheral.writeValue(Data(bytes: [1]), for: pairingTriggerChar, type: .withResponse)
         }
@@ -108,13 +109,13 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     //MARK: -  Central Manager Delegate
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        keepScanning = false
+        canScan = false
         var errorMessage: String?
         switch central.state {
         case .poweredOn:
             errorMessage = nil
             print("Bluetooth is powered on.")
-            keepScanning = true
+            canScan = true
         case .poweredOff:
             errorMessage = "Bluetooth on this device is currently powered off."
         case .unsupported:
@@ -137,7 +138,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     //  Invoked when a connection is successfully created with a peripheral.
     func centralManager(_ central: CBCentralManager, didConnect: CBPeripheral) {
         print("Connected to peripheral! ")
-        didConnect.discoverServices([PebbleBLE.serviceUUID])
+        didConnect.discoverServices([PebbleGATTClient.serviceUUID])
     }
     
     //  Invoked when an existing connection with a peripheral is torn down.
@@ -161,22 +162,25 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         }
     }
     
-    //    //  Invoked when the central manager retrieves a list of peripherals currently connected to the system.
-    //    func centralManager(_ central: CBCentralManager, didRetrieveConnectedPeripherals: [CBPeripheral]) {
-    //
-    //    }
-    //
-    //    //  Invoked when the central manager retrieves a list of known peripherals.
-    //    func centralManager(_ central: CBCentralManager, didRetrievePeripherals: [CBPeripheral]) {
-    //
-    //    }
+    //  Invoked when the central manager retrieves a list of peripherals currently connected to the system.
+    func centralManager(_ central: CBCentralManager, didRetrieveConnectedPeripherals: [CBPeripheral]) {
+
+    }
+
+    //  Invoked when the central manager retrieves a list of known peripherals.
+    func centralManager(_ central: CBCentralManager, didRetrievePeripherals peripherals: [CBPeripheral]) {
+        print("did retrieve peripherals")
+        for peripheral in peripherals {
+            print("Discovered peripheral \(peripheral.name)")
+        }
+    }
     
     
     //MARK: - CBPeripheralDelegate methods
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        if error != nil {
-            let message = "Error discovering services: \(error?.localizedDescription)"
+        if let error = error {
+            let message = "Error discovering services: \(error.localizedDescription)"
             delegate?.bluetoothManager(self, hadAnError: BluetoothManagerError(message: message, type: .discoverServicesError))
             return
         }
@@ -192,18 +196,48 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        if error != nil {
-            let message = "Error discovering characteristics: \(error?.localizedDescription)"
+        if let error = error {
+            let message = "Error discovering characteristics: \(error.localizedDescription)"
             delegate?.bluetoothManager(self, hadAnError: BluetoothManagerError(message: message, type: .discoverCharacteristicsError))
             return
         }
         
         if let characteristics = service.characteristics {
-            self.characteristics = characteristics
-            isOldPebble = !characteristics.contains(where: { $0.uuid == PebbleBLE.connectionParametersCharacteristicUUID })
+            
+            for characteristic in characteristics {
+                print("Discovered characteristic \(characteristic)")
+                self.characteristics[characteristic.uuid] = characteristic
+                peripheral.setNotifyValue(true, for: characteristic);
+            }
+            
+            
+//            isOldPebble = characteristics.contains(where: { $0.uuid == PebbleBLE.connectionParametersCharacteristicUUID }) == false
         }
         
         delegate?.bluetoothManagerDidFinishedConnectingWithDevice(self)
     }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let error = error {
+            let message = "Error updating value for characteristic: \(error.localizedDescription)"
+            delegate?.bluetoothManager(self, hadAnError: BluetoothManagerError(message: message, type: .updateValueError))
+        }
+        
+        print("Updated value of characteristic \(characteristic)")
+        let newValue = characteristic.value
+        print("new value: \(newValue)")
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let error = error {
+            let message = "Error writting value for characteristic: \(error.localizedDescription)"
+            delegate?.bluetoothManager(self, hadAnError: BluetoothManagerError(message: message, type: .updateValueError))
+        }
+        
+        print("Wrote value of characteristic \(characteristic)")
+        let newValue = characteristic.value
+        print("new value: \(newValue)")
+    }
+    
 
 }

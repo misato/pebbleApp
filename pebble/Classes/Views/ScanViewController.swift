@@ -92,12 +92,12 @@ class ScanViewController: UIViewController, BluetoothManagerDelegate, UITableVie
     // MARK: - BluetoothManagerDelegate
     
     func bluetoothManager(_ manager: BluetoothManager, didFindDeviceNamed deviceName: String) {
-        if !deviceNames.contains(deviceName) {
+//        if !deviceNames.contains(deviceName) {
             deviceNames.append(deviceName)
             // This should be done only once!
             devicesTableView.isHidden = false
             devicesTableView.reloadData()
-        }
+//        }
     }
     
     func bluetoothManager(_ manager: BluetoothManager, hadAnError error: BluetoothManagerError) {
