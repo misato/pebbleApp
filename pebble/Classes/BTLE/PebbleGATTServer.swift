@@ -25,16 +25,12 @@ class PebbleGATTServer: NSObject, CBPeripheralManagerDelegate {
     private let writeCharacteristic =  CBMutableCharacteristic(type: PebbleGATTServerUUID.writeCharacteristics, properties: [.writeWithoutResponse, .notify], value: nil, permissions: .writeable)
     private var subscribedCentrals: [CBCentral] = []
     
-    
-    // MARK: - Lifecycle
-    
-    override init() {
-        super.init()
-    }
-    
-    
     // MARK: - Utils
     func createService() {
+        if peripheralManager.isAdvertising {
+            return
+        }
+        
         // Create the service to advertise
         let service = CBMutableService(type: PebbleGATTServerUUID.service, primary: true)
         
@@ -43,7 +39,7 @@ class PebbleGATTServer: NSObject, CBPeripheralManagerDelegate {
         service.characteristics = [readCharacteristic, writeCharacteristic]
         peripheralManager.add(service)
         
-        peripheralManager.startAdvertising(nil)
+        peripheralManager.startAdvertising([CBAdvertisementDataServiceUUIDsKey: [PebbleGATTServerUUID.service]])
     }
     
     // MARK: - Pebble functions

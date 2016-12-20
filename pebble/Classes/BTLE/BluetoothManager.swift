@@ -40,6 +40,13 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     
     private let pebbleServer = PebbleGATTServer()
     
+    private let userDefaultsPeripheralUUIDKey = "userDefaultsPeripheralUUIDKey"
+    private let userDefaultsPeripheralNameKey = "userDefaultsPeripheralNameKey"
+    private let genericDeviceName = "<PEBBLE DEVICE>"
+    private var connectViaUserDefaults = false
+    
+    // MARK: - Init 
+    
     private override init() {
         super.init()
         centralManager.delegate = self
@@ -50,14 +57,29 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     
     @objc func startScanning() {
         print("Start scanning...")
-        centralManager.scanForPeripherals(withServices: [PebbleGATTClient.serviceUUID], options:nil)
-        pebbleServer.createService()
+        
+        // check if we already know a device from the UserDefaults
+        
+        let userDefaults = UserDefaults.standard
+        if userDefaults.string(forKey: userDefaultsPeripheralUUIDKey) != nil {
+            let deviceName = userDefaults.string(forKey: userDefaultsPeripheralNameKey) ?? genericDeviceName
+            delegate?.bluetoothManager(self, didFindDeviceNamed: "[KNOWN] "+deviceName)
+            
+            connectViaUserDefaults = true
+        }
+        else {
+            centralManager.scanForPeripherals(withServices: [PebbleGATTClient.serviceUUID], options:nil)
+            pebbleServer.createService()
+        }
+        
     }
     
     
     @objc func stopScanning() {
         print("Stop scanning...")
-        centralManager.stopScan()
+        if !connectViaUserDefaults {
+            centralManager.stopScan()
+        }
 
     }
     
@@ -70,13 +92,31 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     // MARK: - Connection
     
     func connectToDeviceNamed(_ name: String) {
-        guard let peripheral = devicesList[name] else {
-            return
+        if connectViaUserDefaults {
+            guard let peripheralUUID = UserDefaults.standard.string(forKey: userDefaultsPeripheralUUIDKey), let uuid = UUID(uuidString: peripheralUUID) else {
+                delegate?.bluetoothManager(self, hadAnError: BluetoothManagerError(message: "There's no saved UUID", type: .userDefaultsError))
+                return
+            }
+            
+            let peripherals = centralManager.retrievePeripherals(withIdentifiers: [uuid])
+            if peripherals.isEmpty {
+                delegate?.bluetoothManager(self, hadAnError: BluetoothManagerError(message: "No known peripherals with that UUID", type: .userDefaultsError))
+            }
+            
+            self.peripheral = peripherals.first
         }
-        stopScanning()
-        self.peripheral = peripheral
+        else {
+            guard let peripheral = devicesList[name] else {
+                return
+            }
+            
+            stopScanning()
+            self.peripheral = peripheral
+
+        }
+        
         self.peripheral?.delegate = self
-        centralManager.connect(peripheral, options: nil)
+        centralManager.connect(self.peripheral!, options: nil)
     }
     
     func disconnectFromDevice() {
@@ -102,6 +142,11 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             print("This seems to be some <4.0 FW Pebble, reading pairing trigger")
             peripheral.readValue(for: pairingTriggerChar)
         }
+        
+        // save UUID in NSUserDefaults for reconnection
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(peripheral.identifier.uuidString, forKey: userDefaultsPeripheralUUIDKey)
+        userDefaults.set(peripheral.name, forKey: userDefaultsPeripheralNameKey)
     }
     
     
@@ -224,8 +269,35 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         }
         
         print("Updated value of characteristic \(characteristic)")
-        let newValue = characteristic.value
+        guard let newValue = characteristic.value else {
+            return
+        }
         print("new value: \(newValue)")
+        
+        if characteristic.uuid == PebbleGATTClient.connectivityCharacteristicUUID {
+            
+            let bytes = [UInt8](newValue)
+            let header = bytes[0] & 0xff
+            let command = header & 7
+            let serial = header >> 3
+            
+            
+            print("Command: \(command)")
+            switch command {
+            case 0x01: // ACK
+                print("Got ACK for serial \(serial)")
+            case 0x02: // some request?
+                let response: [UInt8] = (bytes.count > 1) ? [0x03, 0x19, 0x19] : [0x03]
+                print("send data to Pebble: \(response)")
+//                sendDataToPebble(Data(bytes: response))
+            case 0: // normal package
+                print("Got PPoGATT package serial \(serial) sending ACK")
+//                sendAckToPebbleWithSerial(serial)
+            default:
+                print("Unknown command")
+            }
+
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {

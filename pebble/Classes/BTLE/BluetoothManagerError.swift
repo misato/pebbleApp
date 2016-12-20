@@ -15,6 +15,7 @@ enum BluetoothManagerErrorType: Int {
     case discoverCharacteristicsError = 3
     case genericError = 4
     case updateValueError = 5
+    case userDefaultsError = 6
 }
 
 class BluetoothManagerError: NSError {
