@@ -34,7 +34,6 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     private var peripheral: CBPeripheral?
     private var characteristics: [CBUUID:CBCharacteristic] = [:]
     
-//    private var isOldPebble = false
     private var canScan = false
     private var devicesList: [String: CBPeripheral] = [:]
     
@@ -272,30 +271,25 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         guard let newValue = characteristic.value else {
             return
         }
-        print("new value: \(newValue)")
+        
+        let bytes = [UInt8](newValue)
+        print("new value: \(bytes)")
         
         if characteristic.uuid == PebbleGATTClient.connectivityCharacteristicUUID {
+
+            let status = DeviceStatus(rawValue: bytes[0])
+            print(status?.description() ?? "The device status is unknown")
+//            switch bytes[0]{
+//            case 0x01:
+//                print("Device is not bonded")
+//            case 0x05:
+//                print("Device is bonding")
+//            case 0x0F:
+//                print("Device is bonded")
+//            default:
+//                print("Unknown state: \(bytes[0])")
+//            }
             
-            let bytes = [UInt8](newValue)
-            let header = bytes[0] & 0xff
-            let command = header & 7
-            let serial = header >> 3
-            
-            
-            print("Command: \(command)")
-            switch command {
-            case 0x01: // ACK
-                print("Got ACK for serial \(serial)")
-            case 0x02: // some request?
-                let response: [UInt8] = (bytes.count > 1) ? [0x03, 0x19, 0x19] : [0x03]
-                print("send data to Pebble: \(response)")
-//                sendDataToPebble(Data(bytes: response))
-            case 0: // normal package
-                print("Got PPoGATT package serial \(serial) sending ACK")
-//                sendAckToPebbleWithSerial(serial)
-            default:
-                print("Unknown command")
-            }
 
         }
     }

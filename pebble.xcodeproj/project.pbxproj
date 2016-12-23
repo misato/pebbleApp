@@ -11,11 +11,12 @@
 		68A4016A1DFAFFEB006AE55E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68A401681DFAFFEB006AE55E /* Main.storyboard */; };
 		68A4016C1DFAFFEB006AE55E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 68A4016B1DFAFFEB006AE55E /* Assets.xcassets */; };
 		68A4016F1DFAFFEB006AE55E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 68A4016D1DFAFFEB006AE55E /* LaunchScreen.storyboard */; };
-		68F078831E01D8C500213CEE /* BluetoothManagerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078821E01D8C500213CEE /* BluetoothManagerError.swift */; };
-		68F078851E01D8F900213CEE /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078841E01D8F900213CEE /* BluetoothManager.swift */; };
-		68F078881E01DAFE00213CEE /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078871E01DAFE00213CEE /* ScanViewController.swift */; };
-		68F0788A1E01DB3700213CEE /* DeviceConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F078891E01DB3700213CEE /* DeviceConnectionViewController.swift */; };
-		68F2D00B1E04467900705EDC /* PebbleGATTServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F2D00A1E04467900705EDC /* PebbleGATTServer.swift */; };
+		68F5D2561E0D7E950088FDB3 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5D2501E0D7E950088FDB3 /* BluetoothManager.swift */; };
+		68F5D2571E0D7E950088FDB3 /* BluetoothManagerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5D2511E0D7E950088FDB3 /* BluetoothManagerError.swift */; };
+		68F5D2581E0D7E950088FDB3 /* PebbleGATTServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5D2521E0D7E950088FDB3 /* PebbleGATTServer.swift */; };
+		68F5D2591E0D7E950088FDB3 /* DeviceConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5D2541E0D7E950088FDB3 /* DeviceConnectionViewController.swift */; };
+		68F5D25A1E0D7E950088FDB3 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5D2551E0D7E950088FDB3 /* ScanViewController.swift */; };
+		68F5D25D1E0D7ECF0088FDB3 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68F5D25C1E0D7ECF0088FDB3 /* Device.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,11 +26,12 @@
 		68A4016B1DFAFFEB006AE55E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		68A4016E1DFAFFEB006AE55E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		68A401701DFAFFEB006AE55E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		68F078821E01D8C500213CEE /* BluetoothManagerError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothManagerError.swift; sourceTree = "<group>"; };
-		68F078841E01D8F900213CEE /* BluetoothManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
-		68F078871E01DAFE00213CEE /* ScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
-		68F078891E01DB3700213CEE /* DeviceConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceConnectionViewController.swift; sourceTree = "<group>"; };
-		68F2D00A1E04467900705EDC /* PebbleGATTServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PebbleGATTServer.swift; sourceTree = "<group>"; };
+		68F5D2501E0D7E950088FDB3 /* BluetoothManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		68F5D2511E0D7E950088FDB3 /* BluetoothManagerError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothManagerError.swift; sourceTree = "<group>"; };
+		68F5D2521E0D7E950088FDB3 /* PebbleGATTServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PebbleGATTServer.swift; sourceTree = "<group>"; };
+		68F5D2541E0D7E950088FDB3 /* DeviceConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceConnectionViewController.swift; sourceTree = "<group>"; };
+		68F5D2551E0D7E950088FDB3 /* ScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
+		68F5D25C1E0D7ECF0088FDB3 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +64,7 @@
 		68A401631DFAFFEB006AE55E /* pebble */ = {
 			isa = PBXGroup;
 			children = (
-				68A401761DFB0301006AE55E /* Classes */,
+				68F5D24E1E0D7E950088FDB3 /* Source */,
 				68A401641DFAFFEB006AE55E /* AppDelegate.swift */,
 				68A401681DFAFFEB006AE55E /* Main.storyboard */,
 				68A4016B1DFAFFEB006AE55E /* Assets.xcassets */,
@@ -72,32 +74,41 @@
 			path = pebble;
 			sourceTree = "<group>";
 		};
-		68A401761DFB0301006AE55E /* Classes */ = {
+		68F5D24E1E0D7E950088FDB3 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				68F078811E01D33100213CEE /* BTLE */,
-				68F078861E01DAFE00213CEE /* Views */,
+				68F5D25B1E0D7EC50088FDB3 /* Device */,
+				68F5D24F1E0D7E950088FDB3 /* BTLE */,
+				68F5D2531E0D7E950088FDB3 /* Views */,
 			);
-			path = Classes;
+			path = Source;
 			sourceTree = "<group>";
 		};
-		68F078811E01D33100213CEE /* BTLE */ = {
+		68F5D24F1E0D7E950088FDB3 /* BTLE */ = {
 			isa = PBXGroup;
 			children = (
-				68F078821E01D8C500213CEE /* BluetoothManagerError.swift */,
-				68F078841E01D8F900213CEE /* BluetoothManager.swift */,
-				68F2D00A1E04467900705EDC /* PebbleGATTServer.swift */,
+				68F5D2501E0D7E950088FDB3 /* BluetoothManager.swift */,
+				68F5D2511E0D7E950088FDB3 /* BluetoothManagerError.swift */,
+				68F5D2521E0D7E950088FDB3 /* PebbleGATTServer.swift */,
 			);
 			path = BTLE;
 			sourceTree = "<group>";
 		};
-		68F078861E01DAFE00213CEE /* Views */ = {
+		68F5D2531E0D7E950088FDB3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				68F078871E01DAFE00213CEE /* ScanViewController.swift */,
-				68F078891E01DB3700213CEE /* DeviceConnectionViewController.swift */,
+				68F5D2541E0D7E950088FDB3 /* DeviceConnectionViewController.swift */,
+				68F5D2551E0D7E950088FDB3 /* ScanViewController.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		68F5D25B1E0D7EC50088FDB3 /* Device */ = {
+			isa = PBXGroup;
+			children = (
+				68F5D25C1E0D7ECF0088FDB3 /* Device.swift */,
+			);
+			path = Device;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -173,12 +184,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				68F078881E01DAFE00213CEE /* ScanViewController.swift in Sources */,
-				68F078831E01D8C500213CEE /* BluetoothManagerError.swift in Sources */,
-				68F2D00B1E04467900705EDC /* PebbleGATTServer.swift in Sources */,
-				68F0788A1E01DB3700213CEE /* DeviceConnectionViewController.swift in Sources */,
+				68F5D25D1E0D7ECF0088FDB3 /* Device.swift in Sources */,
+				68F5D2571E0D7E950088FDB3 /* BluetoothManagerError.swift in Sources */,
+				68F5D2591E0D7E950088FDB3 /* DeviceConnectionViewController.swift in Sources */,
+				68F5D25A1E0D7E950088FDB3 /* ScanViewController.swift in Sources */,
+				68F5D2561E0D7E950088FDB3 /* BluetoothManager.swift in Sources */,
 				68A401651DFAFFEB006AE55E /* AppDelegate.swift in Sources */,
-				68F078851E01D8F900213CEE /* BluetoothManager.swift in Sources */,
+				68F5D2581E0D7E950088FDB3 /* PebbleGATTServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
