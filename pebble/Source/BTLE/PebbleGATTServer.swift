@@ -49,7 +49,7 @@ class PebbleGATTServer: NSObject, CBPeripheralManagerDelegate {
     }
     
     func sendAckToPebbleWithSerial(_ serial: UInt8) {
-        let data = Data(bytes: [(((serial << 3) | 1) & 0xff)])
+        let data = Data(bytes: [(((serial << 3) | 1) & 0xff)], count: MemoryLayout<UInt8>.size)
         sendDataToPebble(data)
     }
     
@@ -78,7 +78,7 @@ class PebbleGATTServer: NSObject, CBPeripheralManagerDelegate {
                 print("Got ACK for serial \(serial)")
             case 0x02: // some request?
                 let response: [UInt8] = (bytes.count > 1) ? [0x03, 0x19, 0x19] : [0x03]
-                sendDataToPebble(Data(bytes: response))
+                sendDataToPebble(Data(bytes: response, count: response.count))
             case 0: // normal package
                 print("Got PPoGATT package serial \(serial) sending ACK")
                 sendAckToPebbleWithSerial(serial)

@@ -24,6 +24,8 @@
 	<true/>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Smartwatch connection </string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Smartwatch connection</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

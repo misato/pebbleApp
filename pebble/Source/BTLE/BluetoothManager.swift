@@ -135,7 +135,8 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 //        peripheral.setNotifyValue(true, for: pairingTriggerChar);
         
         if pairingTriggerChar.properties.contains(CBCharacteristicProperties.write) {
-            peripheral.writeValue(Data(bytes: [1]), for: pairingTriggerChar, type: .withResponse)
+            var dataToSend = 0x11
+            peripheral.writeValue(Data(bytes: &dataToSend, count: MemoryLayout<Int>.size), for: pairingTriggerChar, type: .withResponse)
         }
         else {
             print("This seems to be some <4.0 FW Pebble, reading pairing trigger")
@@ -169,6 +170,8 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         case .resetting:
             errorMessage = "The BLE Manager is resetting; a state update is pending."
         case .unknown:
+            errorMessage = "The state of the BLE Manager is unknown."
+        @unknown default:
             errorMessage = "The state of the BLE Manager is unknown."
         }
         
@@ -215,7 +218,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     func centralManager(_ central: CBCentralManager, didRetrievePeripherals peripherals: [CBPeripheral]) {
         print("did retrieve peripherals")
         for peripheral in peripherals {
-            print("Discovered peripheral \(peripheral.name)")
+            print("Discovered peripheral \(peripheral.name ?? "")")
         }
     }
     
@@ -302,7 +305,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         
         print("Wrote value of characteristic \(characteristic)")
         let newValue = characteristic.value
-        print("new value: \(newValue)")
+        print("new value: \(String(describing: newValue))")
     }
     
 
