@@ -54,7 +54,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     
     //MARK: - Scanning
     
-    @objc func startScanning() {
+    func startScanning() {
         print("Start scanning...")
         
         // check if we already know a device from the UserDefaults
@@ -74,7 +74,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
     
     
-    @objc func stopScanning() {
+    func stopScanning() {
         print("Stop scanning...")
         if !connectViaUserDefaults {
             centralManager.stopScan()
@@ -135,7 +135,8 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 //        peripheral.setNotifyValue(true, for: pairingTriggerChar);
         
         if pairingTriggerChar.properties.contains(CBCharacteristicProperties.write) {
-            var dataToSend = 0x11
+            
+            var dataToSend = 0x19
             peripheral.writeValue(Data(bytes: &dataToSend, count: MemoryLayout<Int>.size), for: pairingTriggerChar, type: .withResponse)
         }
         else {
