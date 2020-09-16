@@ -10,10 +10,10 @@ import Foundation
 import CoreBluetooth
 
 private struct PebbleGATTServerUUID {
-    static let service = CBUUID(string: "10000000-328E-0FBB-C642-1AA6699BDADA")
+    static let service = CBUUID(string: "20000000-328E-0FBB-C642-1AA6699BDADA")
     static let serviceBADBAD = CBUUID(string: "BADBADBA-DBAD-BADB-ADBA-BADBADBADBAD")
-    static let writeCharacteristics = CBUUID(string: "10000001-328E-0FBB-C642-1AA6699BDADA")
-    static let readCharacteristics = CBUUID(string: "10000002-328E-0FBB-C642-1AA6699BDADA")
+    static let writeCharacteristics = CBUUID(string: "20000001-328E-0FBB-C642-1AA6699BDADA")
+    static let readCharacteristics = CBUUID(string: "20000002-328E-0FBB-C642-1AA6699BDADA")
     static let characteristicsConfigurationDescriptor = CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
 }
 

@@ -133,10 +133,24 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             return
         }
 //        peripheral.setNotifyValue(true, for: pairingTriggerChar);
+        //        peripheral.setNotifyValue(true, for: pairingTriggerChar);
+                
+        //        static byte[] pairTriggerFlagsToBytes(boolean supportsPinningWithoutSlaveSecurity, boolean belowLollipop, boolean modelCompatThing) {
+        //            boolean[] zArr = new boolean[5];
+        //            zArr[0] = true;
+        //            zArr[1] = supportsPinningWithoutSlaveSecurity;
+        //            zArr[3] = belowLollipop;
+        //            zArr[4] = modelCompatThing;
+        //            return ByteUtils.toBytes(zArr);
+        //        }
+        //        try turning on zArr[1] and/or turning off zArr[4] idk
+        //        that function also misses out zArr[2]
+        //        which might need to be true for iOS or something
+        
         
         if pairingTriggerChar.properties.contains(CBCharacteristicProperties.write) {
-            
-            var dataToSend = 0x19
+            //0x19
+            var dataToSend = 0x11
             peripheral.writeValue(Data(bytes: &dataToSend, count: MemoryLayout<Int>.size), for: pairingTriggerChar, type: .withResponse)
         }
         else {
